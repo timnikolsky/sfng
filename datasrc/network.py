@@ -9,6 +9,30 @@ Emoticons = ["OOP", "EXCLAMATION", "HEARTS", "DROP", "DOTDOT", "MUSIC", "SORRY",
 
 Powerups = ["HEALTH", "ARMOR", "WEAPON", "NINJA"]
 
+GameInfoFlags = [
+	"TIMESCORE", "GAMETYPE_RACE", "GAMETYPE_FASTCAP", "GAMETYPE_FNG",
+	"GAMETYPE_DDRACE", "GAMETYPE_DDNET", "GAMETYPE_BLOCK_WORLDS",
+	"GAMETYPE_VANILLA", "GAMETYPE_PLUS", "FLAG_STARTS_RACE", "RACE",
+	"UNLIMITED_AMMO", "DDRACE_RECORD_MESSAGE", "RACE_RECORD_MESSAGE",
+	"ALLOW_EYE_WHEEL", "ALLOW_HOOK_COLL", "ALLOW_ZOOM", "BUG_DDRACE_GHOST",
+	"BUG_DDRACE_INPUT", "BUG_FNG_LASER_RANGE", "BUG_VANILLA_BOUNCE",
+	"PREDICT_FNG", "PREDICT_DDRACE", "PREDICT_DDRACE_TILES", "PREDICT_VANILLA",
+	"ENTITIES_DDNET", "ENTITIES_DDRACE", "ENTITIES_RACE", "ENTITIES_FNG",
+	"ENTITIES_VANILLA", "DONT_MASK_ENTITIES", "ENTITIES_BW"
+	# Full, use GameInfoFlags2 for more flags
+]
+
+CharacterFlags = ["SOLO", "JETPACK", "COLLISION_DISABLED", "ENDLESS_HOOK", "ENDLESS_JUMP", "SUPER",
+                  "HAMMER_HIT_DISABLED", "SHOTGUN_HIT_DISABLED", "GRENADE_HIT_DISABLED", "LASER_HIT_DISABLED", "HOOK_HIT_DISABLED",
+                  "TELEGUN_GUN", "TELEGUN_GRENADE", "TELEGUN_LASER",
+                  "WEAPON_HAMMER", "WEAPON_GUN", "WEAPON_SHOTGUN", "WEAPON_GRENADE", "WEAPON_LASER", "WEAPON_NINJA",
+				  "MOVEMENTS_DISABLED", "IN_FREEZE", "PRACTICE_MODE"]
+
+GameInfoFlags2 = [
+	"ALLOW_X_SKINS", "GAMETYPE_CITY", "GAMETYPE_FDDRACE", "ENTITIES_FDDRACE", "HUD_HEALTH_ARMOR", "HUD_AMMO",
+	"HUD_DDRACE", "NO_WEAK_HOOK", "NO_SKIN_CHANGE_FOR_FROZEN"
+]
+
 RawHeader = '''
 
 #include <engine/message.h>
@@ -48,7 +72,10 @@ Enums = [
 Flags = [
 	Flags("PLAYERFLAG", PlayerFlags),
 	Flags("GAMEFLAG", GameFlags),
-	Flags("GAMESTATEFLAG", GameStateFlags)
+	Flags("CHARACTERFLAG", CharacterFlags),
+	Flags("GAMESTATEFLAG", GameStateFlags),
+	Flags("GAMEINFOFLAG", GameInfoFlags),
+	Flags("GAMEINFOFLAG2", GameInfoFlags2)
 ]
 
 Objects = [
@@ -216,6 +243,31 @@ Objects = [
 
 	NetEvent("DamageInd:Common", [
 		NetIntAny("m_Angle"),
+	]),
+
+	# DDNet stuff
+
+	NetObject("DDNetCharacter", [
+		NetIntAny("m_Flags"),
+		NetTick("m_FreezeEnd"),
+		NetIntRange("m_Jumps", -1, 255),
+		NetIntAny("m_TeleCheckpoint"),
+		NetIntRange("m_StrongWeakId", 0, 'MAX_CLIENTS-1'),
+
+		# New data fields for jump display, freeze bar and ninja bar
+		# Default values indicate that these values should not be used
+		NetIntRange("m_JumpedTotal", -1, 255),
+		NetTick("m_NinjaActivationTick"),
+		NetTick("m_FreezeStart"),
+		# New data fields for improved target accuracy
+		NetIntAny("m_TargetX"),
+		NetIntAny("m_TargetY"),
+	]),
+
+	NetObject("GameInfoEx", [
+		NetIntAny("m_Flags"),
+		NetIntAny("m_Version"),
+		NetIntAny("m_Flags2"),
 	]),
 ]
 

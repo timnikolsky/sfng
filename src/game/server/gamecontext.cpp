@@ -1895,6 +1895,7 @@ void CGameContext::OnInit(/*class IKernel *pKernel*/)
 	AddServerCommand("c", "whisper to the player, you whispered to last", "<text>", CmdConversation);
 	AddServerCommand("help", "show the cmd list or get more information to any command", "<command>", CmdHelp);
 	AddServerCommand("cmdlist", "show the cmd list", 0, CmdHelp);
+	AddServerCommand("emote", "emote", 0, CmdEmote);
 	if(m_Config->m_SvEmoteWheel || m_Config->m_SvEmotionalTees) AddServerCommand("emote", "enable custom emotes", "<emote type> <time in seconds>", CmdEmote);
 
 	//if(!data) // only load once
@@ -2093,6 +2094,17 @@ void CGameContext::OnSnap(int ClientID)
 			if (m_apPlayers[i])
 				m_apPlayers[i]->Snap(ClientID);
 		}
+	}
+
+	// WARNING, this is very hardcoded; for ddnet client support
+	// This object needs to be snapped alongside pDDNetCharacter for that object to work properly
+	int *pUuidItem = (int *)Server()->SnapNewItem(0, 32764, 16); // NETOBJTYPE_EX
+	if(pUuidItem)
+	{
+		pUuidItem[0] = 1993229659;
+		pUuidItem[1] = -102024632;
+		pUuidItem[2] = -1378361269;
+		pUuidItem[3] = -1810037668;
 	}
 }
 void CGameContext::OnPreSnap() {}
